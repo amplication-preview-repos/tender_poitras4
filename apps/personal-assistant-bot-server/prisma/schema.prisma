@@ -1,0 +1,81 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DB_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  automations  Automation[]
+  createdAt    DateTime      @default(now())
+  email        String?
+  firstName    String?
+  id           String        @id @default(cuid())
+  integrations Integration[]
+  lastName     String?
+  password     String?
+  reminders    Reminder[]
+  tasks        Task[]
+  updatedAt    DateTime      @updatedAt
+  username     String?
+}
+
+model Task {
+  createdAt   DateTime        @default(now())
+  description String?
+  dueDate     DateTime?
+  id          String          @id @default(cuid())
+  status      EnumTaskStatus?
+  title       String?
+  updatedAt   DateTime        @updatedAt
+  user        User?           @relation(fields: [userId], references: [id])
+  userId      String?
+}
+
+model Reminder {
+  createdAt         DateTime                       @default(now())
+  id                String                         @id @default(cuid())
+  isRecurring       Boolean?
+  message           String?
+  recurrencePattern EnumReminderRecurrencePattern?
+  reminderTime      DateTime?
+  updatedAt         DateTime                       @updatedAt
+  user              User?                          @relation(fields: [userId], references: [id])
+  userId            String?
+}
+
+model Integration {
+  apiKey             String?
+  createdAt          DateTime @default(now())
+  id                 String   @id @default(cuid())
+  integrationDetails Json?
+  integrationName    String?
+  updatedAt          DateTime @updatedAt
+  user               User?    @relation(fields: [userId], references: [id])
+  userId             String?
+}
+
+model Automation {
+  actions      Json?
+  createdAt    DateTime               @default(now())
+  id           String                 @id @default(cuid())
+  trigger      EnumAutomationTrigger?
+  updatedAt    DateTime               @updatedAt
+  user         User?                  @relation(fields: [userId], references: [id])
+  userId       String?
+  workflowName String?
+}
+
+enum EnumTaskStatus {
+  Option1
+}
+
+enum EnumReminderRecurrencePattern {
+  Option1
+}
+
+enum EnumAutomationTrigger {
+  Option1
+}
